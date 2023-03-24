@@ -13,6 +13,11 @@ app.use(cors());
 
 const mysql = require("mysql2");
 const connection = mysql.createConnection({
+    /*host: "localhost",
+    port: 3306,
+    user: "root",
+    database: "users-db",
+    password: "weak",*/
     mysql_url: "mysql://root:JuDNjvhQ2uCeMcVIFVdD@containers-us-west-168.railway.app:7617/railway",
     database: "railway",
     host: "containers-us-west-168.railway.app",
