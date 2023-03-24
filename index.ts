@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
-import express, { Express, Request, Response } from "express";
+import express, {Express, Request, Response} from "express";
 import cors from "cors";
-import { IData, ILogForm, IRegForm, IUserDB } from "./types/users";
-import { QueryError } from "mysql2";
+import {IData, ILogForm, IRegForm, IUserDB} from "./types/users";
+import {QueryError} from "mysql2";
 
 dotenv.config();
 
@@ -13,11 +13,12 @@ app.use(cors());
 
 const mysql = require("mysql2");
 const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
+    mysql_url: "mysql://root:JuDNjvhQ2uCeMcVIFVdD@containers-us-west-168.railway.app:7617/railway",
+    database: "railway",
+    host: "containers-us-west-168.railway.app",
+    password: "JuDNjvhQ2uCeMcVIFVdD",
+    port: 7617,
     user: "root",
-    database: "users-db",
-    password: "weak",
 });
 
 app.get('/', function (req: Request, res: Response) {
@@ -35,7 +36,7 @@ function convertToBoolean(data: IData[], arr: string[]) {
 }
 
 function convertToBooleanUser(data: any, arr: string[]) {
-    let object = { ...data };
+    let object = {...data};
     arr.map((item: string) => object[item] = !!object[item]);
     return object;
 }
@@ -52,7 +53,7 @@ app.get("/main", (req: Request, res: Response) => {
 });
 
 app.post("/registration", (req: Request, res: Response) => {
-    const { name, email, password }: IRegForm = req.body;
+    const {name, email, password}: IRegForm = req.body;
 
     connection.query("SELECT * FROM users", function (err: QueryError | null, data: IUserDB[]) {
         if (err) {
@@ -89,20 +90,20 @@ app.post("/registration", (req: Request, res: Response) => {
 
             connection.query(sql, [name, email, password, now, now, "active", 0, 0, 0], function (err: QueryError | null) {
                 if (err) {
-                    return res.status(400).send({ message: "Error registered!!!" });
+                    return res.status(400).send({message: "Error registered!!!"});
                 }
             });
-            return res.status(200).send({ message: "You have successfully registered" });
+            return res.status(200).send({message: "You have successfully registered"});
         }
     });
 });
 
 app.post("/login", (req: Request, res: Response) => {
-    const { email, password }: ILogForm = req.body;
+    const {email, password}: ILogForm = req.body;
 
     connection.query("SELECT * FROM users", function (err: QueryError | null, data: IUserDB[]) {
         if (err) {
-            return res.status(404).send({ message: "error get users" });
+            return res.status(404).send({message: "error get users"});
         }
 
         const user = data.find((user: IUserDB) => {
@@ -110,7 +111,7 @@ app.post("/login", (req: Request, res: Response) => {
         });
 
         if (!user) {
-            return res.status(404).send({ message: "User Not Found!" });
+            return res.status(404).send({message: "User Not Found!"});
         }
 
         const userBlocked = data.find((user: IUserDB) => {
@@ -118,7 +119,7 @@ app.post("/login", (req: Request, res: Response) => {
         });
 
         if (userBlocked) {
-            return res.status(404).send({ message: "You are blocked!" });
+            return res.status(404).send({message: "You are blocked!"});
         }
 
         const userDeleted = data.find((user: IUserDB) => {
@@ -126,7 +127,7 @@ app.post("/login", (req: Request, res: Response) => {
         });
 
         if (userDeleted) {
-            return res.status(404).send({ message: "You are deleted!" });
+            return res.status(404).send({message: "You are deleted!"});
         }
 
         const userBool = convertToBooleanUser(user, ["isDelete", "isBlock", "isCheck"]);
@@ -140,7 +141,7 @@ app.post("/login", (req: Request, res: Response) => {
     const data = [now, email];
     connection.query(sql, data, function (err: QueryError | null) {
         if (err) {
-            return res.status(404).send({ message: "error change date login" });
+            return res.status(404).send({message: "error change date login"});
         }
     });
 });
@@ -178,14 +179,14 @@ app.put("/main", (req: Request, res: Response) => {
 
         connection.query(sql, data, function (err: QueryError | null) {
             if (err) {
-                return res.status(400).send({ message: "error change status" });
+                return res.status(400).send({message: "error change status"});
             }
         });
     })
 
     connection.query("SELECT * FROM users", function (err: QueryError | null, data: IUserDB[]) {
         if (err) {
-            return res.status(404).send({ message: "error get users" });
+            return res.status(404).send({message: "error get users"});
         }
         const dataBool = convertToBoolean(data, ["isDelete", "isBlock", "isCheck"]);
         res.status(200).json(dataBool);
@@ -196,5 +197,5 @@ app.put("/main", (req: Request, res: Response) => {
 const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
-    console.log(`App listening on port ${ port }`)
+    console.log(`App listening on port ${port}`)
 });

@@ -12,11 +12,12 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 const mysql = require("mysql2");
 const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
+    mysql_url: "mysql://root:JuDNjvhQ2uCeMcVIFVdD@containers-us-west-168.railway.app:7617/railway",
+    database: "railway",
+    host: "containers-us-west-168.railway.app",
+    password: "JuDNjvhQ2uCeMcVIFVdD",
+    port: 7617,
     user: "root",
-    database: "users-db",
-    password: "weak",
 });
 app.get('/', function (req, res) {
     res.send("server info");
